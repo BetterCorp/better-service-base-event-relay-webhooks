@@ -37,7 +37,10 @@ export class Service extends ServicesBase<
       await this.fastify.post(
         "/whapi/:eventName/",
         async (reply, params, query, body) => {
-          await self.virtualClient.emitMessageEvent(params.eventName, ...body);
+          await self.virtualClient.emitMessageEvent(
+            params.eventName,
+            ...(body as Array<any>)
+          );
           reply.status(202).send();
         }
       );
