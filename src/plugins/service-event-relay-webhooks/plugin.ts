@@ -7,6 +7,7 @@ import {
 import { MyPluginConfig } from "./sec.config";
 import { virtualClient } from "./virtualClient";
 import { fastify } from "@bettercorp/service-base-plugin-web-server";
+import { Tools } from "@bettercorp/tools";
 
 export class Service extends ServicesBase<
   ServiceCallable,
@@ -36,11 +37,9 @@ export class Service extends ServicesBase<
       const self = this;
       await this.fastify.post(
         "/whapi/:eventName/",
-        async (reply, params, query, body) => {
-          await self.virtualClient.emitMessageEvent(
-            params.eventName,
-            ...(body as Array<any>)
-          );
+        async (reply, params, query, body): Promise<any> => {
+          if (!Tools.isArray(body)) return reply.status(400).send();
+          await self.virtualClient.emitMessageEvent(params.eventName, body);
           reply.status(202).send();
         }
       );
