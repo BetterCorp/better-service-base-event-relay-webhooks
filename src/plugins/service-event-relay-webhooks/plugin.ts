@@ -6,7 +6,7 @@ import {
 } from "@bettercorp/service-base";
 import { MyPluginConfig } from "./sec.config";
 import { virtualClient } from "./virtualClient";
-import { fastify } from '@bettercorp/service-base-plugin-web-server';
+import { fastify } from "@bettercorp/service-base-plugin-web-server";
 
 export class Service extends ServicesBase<
   ServiceCallable,
@@ -34,10 +34,13 @@ export class Service extends ServicesBase<
   public override async init(): Promise<void> {
     if ((await this.getPluginConfig()).apiOn) {
       const self = this;
-      self.fastify.post('/whapi/:eventName/', async (reply, params, query, body) => {
-        await (self as any).emitEvent(params.eventName, ...body);
-        reply.status(202).send();
-      });
+      await this.fastify.post(
+        "/whapi/:eventName/",
+        async (reply, params, query, body) => {
+          await self.virtualClient.emitMessageEvent(params.eventName, ...body);
+          reply.status(202).send();
+        }
+      );
     }
   }
   public override async run(): Promise<void> {

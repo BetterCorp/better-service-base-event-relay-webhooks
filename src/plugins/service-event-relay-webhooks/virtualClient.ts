@@ -28,4 +28,7 @@ export class virtualClient extends ServicesClient<
       async (...params: Array<any>) => await handler(params)
     );
   }
+  async emitMessageEvent(eventName: string, params: Array<any>) {
+    await (this._plugin as any).emitEvent(eventName, ...params);
+  }
 }
